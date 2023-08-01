@@ -11,7 +11,7 @@ This repository contains all of the configuration files in my home directory.
 
 ## Install
 ```
-git clone git@github.com:awdeorio/dotfiles.git
+git clone git@github.com:sunnstix/dotfiles.git
 rsync -av dotfiles/ ~/
 rm -rf dotfiles/
 ```
