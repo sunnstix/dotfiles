@@ -1,0 +1,77 @@
+#!/bin/bash
+# backup
+#
+# Drew's script to back up laptop to server
+
+# Stop on errors
+set -Eeuo pipefail
+
+# Bug fix: globbing causes problems with '*' in EXCLUDE strings
+set -o noglob
+
+# Copy stdout and stderr to file
+# exec > >(tee backup.log)
+# exec 2>&1
+
+# Synchronized files
+EXCLUDE+=' --exclude Dropbox*/***'
+EXCLUDE+=' --exclude GoogleDrive*/***'
+
+# Don't backup these files
+EXCLUDE+=' --exclude .Trash/***'
+EXCLUDE+=' --exclude .dropbox/***'
+EXCLUDE+=' --exclude .vagrant.d/***'
+EXCLUDE+=' --exclude .docker/***'
+EXCLUDE+=' --exclude nobackup/***'
+
+# Python, JavaScript and Ruby third party libraries
+EXCLUDE+=' --exclude .venv/***'
+EXCLUDE+=' --exclude venv/***'
+EXCLUDE+=' --exclude env/***'
+EXCLUDE+=' --exclude .tox/***'
+EXCLUDE+=' --exclude __pycache__/***'
+EXCLUDE+=' --exclude *.pyc'
+EXCLUDE+=' --exclude node_modules/***'
+EXCLUDE+=' --exclude .gem/***'
+EXCLUDE+=' --exclude .npm/***'
+EXCLUDE+=' --exclude .bundle/***'
+
+# Virtual machines
+EXCLUDE+=' --exclude *.vmdk'
+EXCLUDE+=' --exclude *.vdi'
+EXCLUDE+=' --exclude *.ova'
+
+# Optional
+EXCLUDE+=' --exclude Library/***'
+EXCLUDE+=' --exclude GoogleDrive/***'
+EXCLUDE+=' --exclude Dropbox/***'
+
+# Sanity check that this is my laptop
+if [ "$HOSTNAME" != "cabra" ]; then
+  echo "Error: \$HOSTNAME=$HOSTNAME"
+  exit 1
+fi
+
+# Check if another backup process is running
+if ps -axc | awk '{print $NF}' | grep -q '^backup$'; then
+  echo "Error: another backup process is running"
+  exit 1
+fi
+
+# Trap C-c and exit
+trap exit 2
+
+# Print commands
+set -x
+
+# Perform backup
+# -a               archive mode; same as -rlptgoD (no -H)
+# -v               increase verbosity
+# -z               compress data during transfer
+# --delete         delete extraneous files from dest dirs
+# -x               avoid crossing a  filesystem  boundary  when recursing
+rsync \
+  -avzx --delete $EXCLUDE \
+  $HOME \
+  awdeorio@newberry.eecs.umich.edu:backup/cabra \
+  $@

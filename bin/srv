@@ -1,0 +1,86 @@
+#!/bin/bash
+
+# Configuration
+HOST=localhost
+PORT=4000
+
+# Stop on errors
+set -Eeuo pipefail
+
+# Parse arguments
+if (( $# > 1 )); then
+  echo "Usage: $0 [DIR]"
+  exit 1
+elif (( $# == 1 )); then
+  DIR="$1"
+fi
+
+# Change directory
+if [ -n "${DIR-}" ]; then
+  if [ ! -d "$DIR" ]; then
+    echo "Error: directory does not exist: ${DIR}"
+    exit 1
+  fi
+  echo "cd $DIR"
+  cd "$DIR"
+fi
+
+# Check if port is already in use
+if nc -z $HOST $PORT &> /dev/null; then
+  echo "Error: ${HOST}:${PORT} is in use"
+  exit 1
+fi
+
+# Intelligently choose the right server
+if [ -e _config.yml ] && grep -q '^plugins' _config.yml; then
+  # Jekyll with primer-spec remote theme
+  SERVERCMD="bundle exec jekyll serve --livereload --incremental --host $HOST --port $PORT"
+  bundle install
+elif [ -e _config.yml ]; then
+  # Jekyll
+  SERVERCMD="jekyll serve --livereload --incremental --host $HOST --port $PORT"
+elif [ -e README.md ]; then
+  # Markdown README
+  SERVERCMD="grip ${HOST}:${PORT}"
+else
+  # Default to HTTP file server
+  SERVERCMD="python3 -m http.server --bind $HOST $PORT"
+fi
+
+# Register handler to kill server on exit
+function cleanup() {
+  kill $PID || echo "Error killing process $PID"
+}
+trap cleanup SIGINT SIGQUIT SIGABRT SIGKILL SIGTERM ERR
+
+# Start server
+echo $SERVERCMD
+$SERVERCMD & PID=$!
+
+# Wait for server to start with a timeout
+TIMEOUT=10
+START_TIME=$(date '+%s')
+STOP_TIME=$(($START_TIME + $TIMEOUT))
+while true; do
+  NOW=$(date '+%s')
+  if curl "${HOST}:${PORT}" --silent --output /dev/null; then
+    break
+  fi
+  if ! kill -0 $PID &> /dev/null; then
+    echo "Error: server process is not running"
+    cleanup
+    exit 1
+  fi
+  if (( $NOW > $STOP_TIME )) ; then
+    echo "Error: server failed to start within ${TIMEOUT} s"
+    cleanup
+    exit 1
+  fi
+  sleep 0.5
+done
+
+# Open browser tab
+open "http://${HOST}:${PORT}"
+
+# Wait for all processes to exit
+wait

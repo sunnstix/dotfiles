@@ -1,0 +1,19 @@
+#!/bin/bash
+set -Eeuo pipefail
+
+
+DROPBOX="$(realpath ~/Dropbox)"
+set -x
+rm -rvf ${HOME}/.Trash/*
+rm -rvf ${HOME}/Downloads/*
+rm -rvf ${HOME}/Desktop/*
+rm -vf "${HOME}/awdeorio@gmail.com - Google Drive"
+rm -vf "${HOME}/awdeorio@umich.edu - Google Drive"
+find "$DROPBOX" -name '*~' -exec rm -v {} \;
+find "$DROPBOX" -name '*conflicted copy*'
+{ set +x; } 2>/dev/null
+
+# Symlink Cloud Storage to mnt
+for SHARE in $(find "${HOME}/Library/CloudStorage" -mindepth 1 -maxdepth 1); do
+  ln -sf "$SHARE" "${HOME}/mnt"
+done

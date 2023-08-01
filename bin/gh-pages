@@ -1,0 +1,17 @@
+#!/bin/bash
+#
+# Open GitHub Pages URL corresponding to the current repository
+# 
+# GitHub Pages via GitHub REST API API
+# https://docs.github.com/en/rest/pages
+set -Eeuo pipefail
+
+# Get {USER}/{REPO}
+# EXAMPLE: eecs485staff/p1-insta485-static
+USER_REPO=$(git config --get remote.origin.url | sed -E 's/(git@github.com:|.git)//g')
+
+# Compute URL
+URL=$(gh api repos/${USER_REPO}/pages --jq '.html_url')
+
+# Open URL in brower (macOS only)
+open "$URL"

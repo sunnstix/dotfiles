@@ -1,0 +1,79 @@
+#!/usr/bin/perl
+# rn
+#
+# renames files using Perl regex
+#
+# Andrew DeOrio <awdeorio@umich.edu>
+
+use strict;
+use Getopt::Long;
+use Data::Dumper;
+use File::Find;
+use File::Basename;
+
+
+### Parse Options #############################################################
+Getopt::Long::Configure ("bundling"); # - vs. --
+my %opt;
+$opt{help}          = '';
+$opt{verbose}       = 't';
+$opt{dryrun}        = '';
+$opt{recursive}     = '';
+
+GetOptions(
+           "help|h|?"    =>\$opt{help},
+           "verbose|v"   =>\$opt{verbose},
+           "recursive|r" =>\$opt{recursive},
+           "dry-run|n"   =>\$opt{dryrun},
+           );
+
+usage() if $opt{help};
+print "dry run\n" if $opt{dryrun};
+my $op = shift or &usage();
+chomp(@ARGV = <STDIN>) unless @ARGV;
+
+
+### Main ######################################################################
+if ($opt{recursive}) {
+  find(\&mv, @ARGV);
+} else {
+  foreach (@ARGV) {
+    &mv($_);
+  }
+}
+
+
+### Functions #################################################################
+sub mv {
+  my $old_filename = $_;
+
+  # make sure we are working on files and dirs
+  die "Error: $old_filename is not a file or direcory"
+    unless (-f $old_filename || -d $old_filename);
+
+  # compute new filename
+  eval $op;
+  die $@ if $@;
+  my $new_filename = $_;
+
+  # print and move
+  return if $old_filename eq $new_filename;
+  print "$old_filename -> $new_filename\n" if $opt{verbose};
+  return if $opt{dryrun};
+  rename ($old_filename, $new_filename) or die "Error: rename $!";
+}
+
+sub usage {
+  my $prog = basename($0);
+  print "Usage: $prog expr [files]\n\n",
+    "Options:\n",
+    "  -h  --help        show this message\n",
+    "  -v  --verbose     print more information\n",
+    "  -r  --recursive   recurse into directories\n",
+    "  -n  --dry-run     do not actually rename any files\n",
+    "Examples: \n",
+    "  $prog 'tr/A-Z/a-z/'   *         convert to lowercase\n",
+    "  $prog 's/\.orig\$//'    *.orig    remove trailing '.orig'\n",
+    "  $prog '\$_ .= \".old\"'  *         append '.old'\n";
+  exit(0);
+}

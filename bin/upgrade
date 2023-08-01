@@ -1,0 +1,45 @@
+#!/usr/bin/env bash
+
+# Stop on errors
+set -Eeuo pipefail
+
+# Copy output to log file
+LOGFILE=upgrade.log
+echo "Logging to ${LOGFILE}"
+exec > >(tee -a ${LOGFILE}); exec 2>&1;
+echo "$0"
+date
+
+# Cache sudo permissions
+sudo -v
+
+# Print commands
+set -x
+
+# Update Emacs packages
+command emacs \
+  --load ${HOME}/.emacs.d/init.el \
+  --funcall auto-package-update-now \
+  --batch
+
+# Update Python packages
+pip3 install --quiet --upgrade \
+  pip \
+  setuptools \
+  wheel
+
+# Update Ruby packages
+gem update --system --quiet
+gem cleanup --silent
+
+# Update Homebrew packages
+brew update --quiet
+brew upgrade --quiet --greedy
+brew cleanup --quiet
+
+# Update macOS packages
+softwareupdate --install --all
+
+# Finished
+set +x
+echo "$0 success"

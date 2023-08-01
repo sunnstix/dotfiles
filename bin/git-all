@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# Repos are listed at https://github.com/eecs280staff
+
+# Stop on errors
+set -Eeuo pipefail
+
+# Get a list of repos in PWD
+REPOS=$(ls -d */.git | sed 's/\/\.git$//')
+
+# Execute git subcommand in each repo
+for REPO in ${REPOS}; do
+  pushd ${REPO} > /dev/null
+  echo "==> ${REPO} <=="
+  git $@
+  echo
+  popd > /dev/null
+done

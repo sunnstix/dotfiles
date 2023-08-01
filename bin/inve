@@ -1,0 +1,95 @@
+#!/bin/bash
+#
+# inve
+#
+# usage: inve [VIRTUAL_ENV]
+#
+# Attempts to find the root of a virtual environment by walking the directory
+# tree from "$PWD" to "/".  Then, it activates a subshell.
+#
+# Based on https://datagrok.org/python/activate/
+#
+# https://www.gnu.org/software/bash/manual/html_node/Bash-Startup-Files.html
+
+# Stop on errors
+set -Eeuo pipefail
+
+# Search for virtual environments in directories with these names
+VIRTUAL_ENV_BASENAMES=".venv venv env"
+
+if [ -n "${1-}" ]; then
+  # Virtual environment root specified as argument
+  VIRTUAL_ENV="$1"
+else
+  # Save PWD
+  INVE_OLDPWD="`pwd`"
+
+  # Search up for the root of a virtual environment, trying each of the
+  # possible viretual env base names.
+  while [ "${PWD}" != "/" ]; do
+    for VIRTUAL_ENV_BASENAME in ${VIRTUAL_ENV_BASENAMES}; do
+      VIRTUAL_ENV="${PWD}/${VIRTUAL_ENV_BASENAME}"
+      if [ -e "${VIRTUAL_ENV}/bin/activate" ]; then
+        break 2  # break out of nested loop
+      fi
+    done
+    cd ..
+  done
+  if [ "$PWD" = "/" ]; then
+    VIRTUAL_ENV_BASE=.venv
+    VIRTUAL_ENV="${INVE_OLDPWD}/${VIRTUAL_ENV_BASE}"
+    read -p "No virtual environment found.  Would you like to create ${VIRTUAL_ENV_BASE} ? [yn]: " -n 1 -r
+    echo
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+      echo "python3 -m venv ${VIRTUAL_ENV}"
+      python3 -m venv "${VIRTUAL_ENV}"
+      echo "pip install --upgrade --quiet pip setuptools wheel"
+      "${VIRTUAL_ENV}/bin/pip" install --upgrade --quiet pip setuptools wheel
+    else
+      echo "exit"
+      exit 1
+    fi
+  fi
+
+  # Restore PWD
+  cd "${INVE_OLDPWD}"
+fi
+
+# Sanity checks
+if ! test -d "${VIRTUAL_ENV}"; then
+  echo "Error: directory does not exist: ${VIRTUAL_ENV}"
+  exit 1
+fi
+if ! test -d "${VIRTUAL_ENV}/bin"; then
+  echo "Error: directory does not exist: ${VIRTUAL_ENV}/bin"
+  exit 1
+fi
+
+# Write a tmp bashrc file
+# FIXME get a safe filename
+TMPFILE=/tmp/inve-bashrc
+rm -f $TMPFILE
+touch $TMPFILE
+
+# Mimic bash interactive shell
+if test -f ~/.bashrc; then
+  echo "source ~/.bashrc" >> $TMPFILE
+fi
+
+# Activate virtual environment
+echo "export VIRTUAL_ENV=\"${VIRTUAL_ENV}\""
+echo "export PATH=\"${VIRTUAL_ENV}/bin:\${PATH}\""
+echo "export VIRTUAL_ENV=\"${VIRTUAL_ENV}\"" >> $TMPFILE
+echo "export PATH=\"${VIRTUAL_ENV}/bin:\${PATH}\"" >> $TMPFILE
+
+# Load .env file if there is one
+# set -a causes defined variables to be exported
+if test -f .env; then
+  echo "source .env"
+  echo "set -a" >> $TMPFILE
+  echo "source .env" >> $TMPFILE
+  echo "set +a" >> $TMPFILE
+fi
+
+# Start a subshell initialized with the tmp bashrc we just wrote
+exec bash --rcfile $TMPFILE
