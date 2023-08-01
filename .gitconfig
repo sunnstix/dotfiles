@@ -1,14 +1,14 @@
 [user]
-	name = Andrew DeOrio
-	email = awdeorio@umich.edu
-	signingKey = BB6201BA07530070
+	name = Sanket Nayak
+	email = sanket1598@ugmail.com
+	signingKey = 52F6F799A9080F21
 [color]
 	diff = auto
 	status = auto
 	branch = auto
-[core]
-	editor = emacs
-	excludesfile = /Users/awdeorio/.gitignore_global
+# [core]
+# 	editor = emacs
+# 	excludesfile = ${HOME}/.gitignore_global
 [alias]
   graph = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(bold blue)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
   logdoga = log --decorate --oneline --graph --all
@@ -25,9 +25,9 @@
 	default = simple
 [gpg]
 	program = gpg
-[diff]
-	tool = ediff
-[difftool.ediff]
-	cmd = emacs --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
+# [diff]
+# 	tool = ediff
+# [difftool.ediff]
+# 	cmd = emacs --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
 [init]
 	defaultBranch = main

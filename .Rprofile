@@ -1,6 +1,5 @@
 # .Rprofile
 #
-# by Andrew DeOrio
 # 2012-12-11
 
 # general options
