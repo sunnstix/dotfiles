@@ -1,4 +1,4 @@
-awdeorio's dot files
+sunnstix's dot files
 ====================
 
 This repository contains all of the configuration files in my home directory.
