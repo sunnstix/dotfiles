@@ -47,7 +47,10 @@ path-prepend ${HOME}/bin
 path-prepend ${HOME}/local/bin
 path-prepend ${HOME}/local/sbin
 
-eval $(/opt/homebrew/bin/brew shellenv)
+if command -v brew 1>/dev/null 2>&1; then
+    eval $(/opt/homebrew/bin/brew shellenv)
+fi
+
 
 
 #==========================================#
@@ -152,9 +155,9 @@ case "$TERM" in
     if [ "$LOGNAME" == "root" ]; then
       # root
       PS1='\[${bldred}\]\]\u@\h \[${bldblue}\]\W\n\$ \[${txtrst}\]'
-    elif [ "$SSH_CONNECTION" ]; then
-      # remote machines
-      PS1='\[${txtblk}\]$(ps1_context)\[${bldcyn}\]\u@\h \[${bldblu}\]\W\n\$ \[${txtrst}\]'
+    # elif [ "$SSH_CONNECTION" ]; then
+    #   # remote machines
+    #   PS1='\[${txtblk}\]$(ps1_context)\[${bldcyn}\]\u@\h \[${bldblu}\]\W\n\$ \[${txtrst}\]'
     else
       # local machine
       PS1='\[${txtpur}\]$(ps1_context)\[${bldgrn}\]\u\[${bldwht}\]@\[${bldylw}\]\h \[${bldcyn}\]\W\n\$ \[${txtrst}\]'
