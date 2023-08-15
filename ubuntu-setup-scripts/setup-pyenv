@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# Reference Documentation
+# https://github.com/ohmyzsh/ohmyzsh/wiki/Installing-ZSH
+
+curl https://pyenv.run | bash

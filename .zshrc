@@ -93,7 +93,7 @@ export CLICOLOR=1
 export LSCOLORS=Exfxcxdxbxegedabagacad
  
 # Tell grep to highlight matches
-export GREP_OPTIONS='--color=auto'
+# export GREP_OPTIONS='--color=auto'
 
 # History Changes
 export HISTIGNORE="&:ls:cd:bg:fg:ll:clear" # ignore these commands in history
