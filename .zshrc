@@ -95,10 +95,18 @@ export LSCOLORS=Exfxcxdxbxegedabagacad
 # Tell grep to highlight matches
 # export GREP_OPTIONS='--color=auto'
 
-# History Changes
+#==========================================#
+################# HISTORY ##################
+#==========================================#
+export HISTFILE=~/.zsh_history
+export HISTFILESIZE=1000000000
+export HISTSIZE=1000000000
+setopt INC_APPEND_HISTORY
+export HISTTIMEFORMAT="[%F %T] "
 export HISTIGNORE="&:ls:cd:bg:fg:ll:clear" # ignore these commands in history
-export HISTCONTROL="ignoredups"      # ignore duplicates in history
+setopt HIST_IGNORE_ALL_DUPS      # ignore duplicates in history
 export FIGNORE="~"                   # don't show these prefixes in tab-comp
+
 
 # Git status
 function find_git_context() {
