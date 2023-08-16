@@ -7,7 +7,7 @@ This repository contains all of the configuration files in my home directory.
 
 [.always_forget.txt](.always_forget.txt) is an extensive cheat sheet of UNIX commands.
 
-[.bashrc](.bashrc) contains my shell customizations.
+[.bashrc](.bashrc) and [.zshrc](.zshrc) contains my shell customizations.
 
 ## Install
 ```
