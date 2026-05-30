@@ -10,7 +10,7 @@ Everything below reflects *this* config. Prefix keys: **tmux = `Ctrl-a`**, **Laz
 |---|---|
 | Accept grey autosuggestion | `→` (right arrow) or `Ctrl-Space` |
 | Accept one word of suggestion | `Alt-→` |
-| Fuzzy history search | `Ctrl-r` |
+| Fuzzy history search (atuin) | `Ctrl-r` |
 | Fuzzy file insert into command | `Ctrl-t` |
 | Fuzzy `cd` into subdir | `Alt-c` |
 | Prepend `sudo` to last command | `Esc` `Esc` (double-tap) |
@@ -116,6 +116,19 @@ Shows: OS · user · directory · git branch+status · language versions (node/p
 - Shell integration keys are `Ctrl-t`, `Ctrl-r`, `Alt-c` (see zsh section).
 
 ---
+
+## 🕰️ atuin (smart shell history) — owns `Ctrl-r`
+
+| Action | Keys / command |
+|---|---|
+| Search history (fuzzy, frecency-ranked) | `Ctrl-r` |
+| In the search UI: filter scope | `Ctrl-r` cycles global / host / session / dir |
+| Accept (paste to prompt) / run | `Enter` (paste) · `Tab` (paste w/o run) |
+| Stats | `atuin stats` |
+| Search from CLI | `atuin search <term>` |
+
+Up-arrow stays normal history (atuin runs with `--disable-up-arrow`). Atuin also
+feeds the grey **autosuggestions** — they're now frecency-ranked, not just "most recent".
 
 ## 🚀 zoxide (smart cd)
 

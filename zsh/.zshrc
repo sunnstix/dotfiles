@@ -66,6 +66,10 @@ plugins=(
   zsh-completions           # extra completion definitions
   zsh-syntax-highlighting   # <-- keep LAST
 )
+# autosuggestions: suggest from history first, then fall back to a
+# completion-based guess when nothing in history matches.
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#6c7086"   # Catppuccin overlay0 (subtle grey)
 source "$ZSH/oh-my-zsh.sh"
 
 # ---------------------------------------------------------------------------
@@ -125,6 +129,12 @@ fi
 # zoxide  (smarter cd). `z foo` jumps to best match, `zi` is interactive.
 # ---------------------------------------------------------------------------
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+
+# ---------------------------------------------------------------------------
+# atuin  (SQLite-backed, frecency-ranked shell history; takes over Ctrl-R)
+# Initialized AFTER fzf so atuin owns Ctrl-R. Up-arrow stays default history.
+# ---------------------------------------------------------------------------
+command -v atuin >/dev/null && eval "$(atuin init zsh --disable-up-arrow)"
 
 # ---------------------------------------------------------------------------
 # yazi  (file manager). `y` opens it and cd's to wherever you quit.
@@ -210,9 +220,7 @@ alias glog="git log --graph --abbrev-commit --decorate --date=relative \
 # ---------------------------------------------------------------------------
 # Keybindings
 # ---------------------------------------------------------------------------
-bindkey '^[[A' history-substring-search-up    2>/dev/null   # ↑ search (if plugin)
-bindkey '^[[B' history-substring-search-down  2>/dev/null
-bindkey '^ ' autosuggest-accept                            # Ctrl-Space accept suggestion
+bindkey '^ ' autosuggest-accept   # Ctrl-Space: accept the grey autosuggestion
 
 # ---------------------------------------------------------------------------
 # Starship prompt  (config: ~/.config/starship.toml)

@@ -32,7 +32,7 @@ install_deps_macos() {
     eval "$(/opt/homebrew/bin/brew shellenv 2>/dev/null || /usr/local/bin/brew shellenv)"
   fi
   say "brew install tools"
-  brew install zsh stow tmux neovim fzf zoxide starship eza bat fd git-delta lazygit yazi
+  brew install zsh stow tmux neovim fzf zoxide starship eza bat fd git-delta lazygit yazi atuin
 }
 
 install_deps_linux() {
@@ -64,6 +64,18 @@ install_deps_linux() {
     say "lazygit"; LGV=$(curl -sSL https://api.github.com/repos/jesseduffield/lazygit/releases/latest | grep -oP '"tag_name": *"v\K[0-9.]+' | head -1)
     curl -sSL -o /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LGV}_Linux_x86_64.tar.gz"
     tar -xzf /tmp/lazygit.tar.gz -C "$LB" lazygit; chmod +x "$LB/lazygit"
+  fi
+  # eza from upstream: apt's build is old and its icon codepoints predate
+  # current Nerd Fonts (generic folder/file icons render as boxes).
+  if [ ! -x "$LB/eza" ]; then
+    say "eza (upstream, current Nerd Font icons)"
+    curl -sSL -o /tmp/eza.tar.gz https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz \
+      && tar -xzf /tmp/eza.tar.gz -C "$LB" 2>/dev/null && chmod +x "$LB/eza"
+  fi
+  if ! command -v atuin >/dev/null; then
+    say "atuin"; curl -sSL -o /tmp/atuin.tar.gz https://github.com/atuinsh/atuin/releases/latest/download/atuin-x86_64-unknown-linux-gnu.tar.gz
+    rm -rf /tmp/atuin-x; mkdir -p /tmp/atuin-x; tar -xzf /tmp/atuin.tar.gz -C /tmp/atuin-x
+    find /tmp/atuin-x -name atuin -type f -exec cp {} "$LB/atuin" \;; chmod +x "$LB/atuin"
   fi
 }
 
@@ -157,6 +169,9 @@ post_install() {
   fi
   say "neovim plugin sync (LazyVim) — first launch also does this"
   command -v nvim >/dev/null && nvim --headless "+Lazy! sync" +qa 2>/dev/null || true
+  if command -v atuin >/dev/null && [ "$(atuin history list 2>/dev/null | wc -l)" -eq 0 ]; then
+    say "atuin: importing existing shell history"; atuin import auto || true
+  fi
 }
 
 # ---------------------------------------------------------------------------

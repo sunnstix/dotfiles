@@ -2,7 +2,7 @@
 
 A modern, cross-platform (macOS + Ubuntu) terminal setup managed with **GNU Stow**.
 
-**Stack:** zsh + oh-my-zsh · starship prompt · tmux · LazyVim (neovim) · yazi · fzf · zoxide · lazygit — all themed **Catppuccin Mocha**.
+**Stack:** zsh + oh-my-zsh · starship prompt · tmux · LazyVim (neovim) · yazi · fzf · zoxide · atuin · lazygit — all themed **Catppuccin Mocha**.
 
 ## Install — one command
 
