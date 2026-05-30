@@ -178,13 +178,25 @@ post_install() {
 # 5. Default shell -> zsh
 # ---------------------------------------------------------------------------
 set_shell() {
-  [ "$NO_SUDO" -eq 1 ] && { say "skipping chsh (--no-sudo). Run: chsh -s \$(which zsh)"; return; }
   local zsh_path; zsh_path="$(command -v zsh)"
-  if [ "${SHELL:-}" != "$zsh_path" ]; then
-    say "Changing default shell to zsh (may prompt for password)"
-    grep -qx "$zsh_path" /etc/shells 2>/dev/null || echo "$zsh_path" | sudo tee -a /etc/shells >/dev/null
-    chsh -s "$zsh_path" || say "chsh failed — run manually: chsh -s $zsh_path"
+  [ -z "$zsh_path" ] && return
+  [ "${SHELL:-}" = "$zsh_path" ] && { say "Default shell is already zsh"; return; }
+
+  # Need a terminal to prompt for confirmation / password.
+  if [ "$NO_SUDO" -eq 1 ] || [ ! -t 0 ]; then
+    say "Skipping shell change (no TTY / --no-sudo). Switch later with: chsh -s $zsh_path"
+    return
   fi
+
+  printf '\n\033[1;35m==>\033[0m Make zsh your default login shell now? [Y/n] '
+  read -r ans
+  case "$ans" in
+    [Nn]*) say "Keeping your current shell. Switch anytime with: chsh -s $zsh_path"; return ;;
+  esac
+  say "Changing default shell to zsh (chsh will prompt for your password)"
+  grep -qx "$zsh_path" /etc/shells 2>/dev/null || echo "$zsh_path" | sudo tee -a /etc/shells >/dev/null
+  chsh -s "$zsh_path" && say "Done — effective on your next login" \
+    || say "chsh failed — run manually: chsh -s $zsh_path"
 }
 
 # ---------------------------------------------------------------------------
