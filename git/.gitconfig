@@ -60,3 +60,7 @@
 	smudge = git-lfs smudge -- %f
 	required = true
 	process = git-lfs filter-process
+
+# Machine-local overrides (credential helpers, work email, etc.) — untracked.
+[include]
+	path = ~/.gitconfig.local

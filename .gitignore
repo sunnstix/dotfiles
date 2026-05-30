@@ -10,3 +10,4 @@ yazi/.config/yazi/package.toml
 # never commit machine-local / secret overrides
 .zshrc.local
 *.bak-*
+.gitconfig.local
