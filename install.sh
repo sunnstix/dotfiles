@@ -164,9 +164,14 @@ post_install() {
   command -v ya >/dev/null && (ya pkg add yazi-rs/flavors:catppuccin-mocha 2>/dev/null || ya pack -a yazi-rs/flavors:catppuccin-mocha 2>/dev/null) || true
   say "tmux plugins (TPM)"
   if [ -x "$HOME/.config/tmux/plugins/tpm/bin/install_plugins" ]; then
-    tmux start-server 2>/dev/null || true
+    # Use a throwaway named session and set TMUX_PLUGIN_MANAGER_PATH explicitly:
+    # an already-running tmux server may not have sourced our conf (so the TPM
+    # `run` line never set the var), which makes install_plugins abort.
     tmux new-session -d -s _tpm_setup 2>/dev/null || true
-    "$HOME/.config/tmux/plugins/tpm/bin/install_plugins" || true
+    tmux set-environment -g TMUX_PLUGIN_MANAGER_PATH "$HOME/.config/tmux/plugins/" 2>/dev/null || true
+    tmux source-file "$HOME/.config/tmux/tmux.conf" 2>/dev/null || true
+    "$HOME/.config/tmux/plugins/tpm/bin/install_plugins" || \
+      say "  (TPM headless install skipped — just press 'prefix + I' inside tmux)"
     tmux kill-session -t _tpm_setup 2>/dev/null || true
   fi
   say "neovim plugin sync (LazyVim) — first launch also does this"
