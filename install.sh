@@ -39,7 +39,7 @@ install_deps_linux() {
   if [ "$NO_SUDO" -eq 0 ]; then
     say "apt install (needs sudo)"
     sudo apt-get update -y
-    sudo apt-get install -y zsh stow tmux eza bat fd-find git-delta build-essential curl unzip git
+    sudo apt-get install -y zsh stow tmux eza bat fd-find git-delta build-essential curl unzip git fontconfig
   else
     say "skipping apt (--no-sudo); assuming zsh/stow/tmux/eza/bat/fd present"
   fi
@@ -64,6 +64,39 @@ install_deps_linux() {
     say "lazygit"; LGV=$(curl -sSL https://api.github.com/repos/jesseduffield/lazygit/releases/latest | grep -oP '"tag_name": *"v\K[0-9.]+' | head -1)
     curl -sSL -o /tmp/lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LGV}_Linux_x86_64.tar.gz"
     tar -xzf /tmp/lazygit.tar.gz -C "$LB" lazygit; chmod +x "$LB/lazygit"
+  fi
+}
+
+# ---------------------------------------------------------------------------
+# 1b. Nerd Font (needed for icons in eza/starship/yazi/lazygit)
+# ---------------------------------------------------------------------------
+install_font() {
+  if [ "$OS" = macos ]; then
+    say "Nerd Font (Homebrew cask)"
+    brew list --cask font-jetbrains-mono-nerd-font >/dev/null 2>&1 \
+      || brew install --cask font-jetbrains-mono-nerd-font || true
+    return
+  fi
+  if fc-list 2>/dev/null | grep -qi "JetBrainsMono Nerd Font"; then
+    say "Nerd Font already installed"
+  else
+    say "Installing JetBrainsMono Nerd Font"
+    mkdir -p "$HOME/.local/share/fonts"
+    curl -sSL -o /tmp/JetBrainsMono.zip \
+      https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip \
+      && unzip -o -q /tmp/JetBrainsMono.zip -d "$HOME/.local/share/fonts/JetBrainsMonoNerdFont" \
+      && fc-cache -f >/dev/null 2>&1
+    rm -f /tmp/JetBrainsMono.zip
+  fi
+  # Best-effort: point GNOME Terminal's default profile at the Nerd Font
+  if command -v gnome-terminal >/dev/null && command -v dconf >/dev/null; then
+    local pid; pid="$(gsettings get org.gnome.Terminal.ProfilesList default 2>/dev/null | tr -d "'")"
+    if [ -n "$pid" ]; then
+      local base="/org/gnome/terminal/legacy/profiles:/:$pid"
+      dconf write "$base/use-system-font" "false" 2>/dev/null || true
+      dconf write "$base/font" "'JetBrainsMono Nerd Font 12'" 2>/dev/null || true
+      say "Set GNOME Terminal font (reopen the terminal to see icons)"
+    fi
   fi
 }
 
@@ -112,7 +145,12 @@ post_install() {
   say "yazi Catppuccin flavor"
   command -v ya >/dev/null && (ya pkg add yazi-rs/flavors:catppuccin-mocha 2>/dev/null || ya pack -a yazi-rs/flavors:catppuccin-mocha 2>/dev/null) || true
   say "tmux plugins (TPM)"
-  [ -x "$HOME/.config/tmux/plugins/tpm/bin/install_plugins" ] && "$HOME/.config/tmux/plugins/tpm/bin/install_plugins" || true
+  if [ -x "$HOME/.config/tmux/plugins/tpm/bin/install_plugins" ]; then
+    tmux start-server 2>/dev/null || true
+    tmux new-session -d -s _tpm_setup 2>/dev/null || true
+    "$HOME/.config/tmux/plugins/tpm/bin/install_plugins" || true
+    tmux kill-session -t _tpm_setup 2>/dev/null || true
+  fi
   say "neovim plugin sync (LazyVim) — first launch also does this"
   command -v nvim >/dev/null && nvim --headless "+Lazy! sync" +qa 2>/dev/null || true
 }
@@ -134,6 +172,7 @@ set_shell() {
 main() {
   if [ "$STOW_ONLY" -eq 1 ]; then do_stow; exit 0; fi
   [ "$OS" = macos ] && install_deps_macos || install_deps_linux
+  install_font
   install_zsh_plugins
   do_stow
   post_install
