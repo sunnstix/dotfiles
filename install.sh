@@ -122,17 +122,21 @@ install_zsh_plugins() {
 do_stow() {
   say "Stowing packages: ${PACKAGES[*]}"
   local stamp; stamp="$(date +%Y%m%d-%H%M%S)"
+  local df_real; df_real="$(cd "$DOTFILES" && pwd -P)"
   for pkg in "${PACKAGES[@]}"; do
-    # back up any existing *real* (non-symlink) target files
+    # back up only *genuine* real files that would conflict.
     while IFS= read -r -d '' f; do
       rel="${f#"$DOTFILES/$pkg/"}"; tgt="$HOME/$rel"
-      if [ -e "$tgt" ] && [ ! -L "$tgt" ]; then
-        mkdir -p "$(dirname "$tgt")/.dotfiles-backup-$stamp" 2>/dev/null || true
-        mv "$tgt" "$HOME/$rel.bak-$stamp"
-        echo "   backed up $tgt -> $rel.bak-$stamp"
-      fi
+      [ -e "$tgt" ] || continue          # nothing there
+      [ -L "$tgt" ] && continue          # already a stow symlink
+      # Resolve the physical path. If it already lives inside the repo
+      # (e.g. reached through a folded directory symlink), it's already
+      # stowed — never touch it.
+      tgt_real="$(cd "$(dirname "$tgt")" 2>/dev/null && pwd -P)/$(basename "$tgt")"
+      case "$tgt_real" in "$df_real"/*) continue ;; esac
+      mv "$tgt" "$tgt.bak-$stamp" && echo "   backed up $tgt -> $rel.bak-$stamp"
     done < <(find "$DOTFILES/$pkg" -type f -print0)
-    stow -v -R -t "$HOME" -d "$DOTFILES" "$pkg"
+    stow -R -t "$HOME" -d "$DOTFILES" "$pkg"
   done
 }
 
