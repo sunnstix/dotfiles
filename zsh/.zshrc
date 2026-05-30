@@ -212,6 +212,23 @@ alias df='df -h'
 alias du='du -h'
 alias grep='grep --color=auto'
 [ "$OS" = linux ] && alias ip='ip --color=auto'   # GNU ip only (not on macOS)
+# clipboard: `echo foo | clip`  /  `clip < file`  /  `paste-clip` to read it back.
+# Native backend when local (macOS pbcopy, Wayland wl-copy, X11 xclip/xsel);
+# OSC52 fallback when remote, so `clip` over SSH reaches your LOCAL clipboard
+# (relies on tmux `set-clipboard on`, which is set in tmux.conf).
+if command -v pbcopy >/dev/null; then
+  alias clip='pbcopy'; alias paste-clip='pbpaste'
+elif command -v wl-copy >/dev/null; then
+  alias clip='wl-copy'; alias paste-clip='wl-paste'
+elif command -v xclip >/dev/null; then
+  alias clip='xclip -selection clipboard'; alias paste-clip='xclip -selection clipboard -o'
+elif command -v xsel >/dev/null; then
+  alias clip='xsel --clipboard --input'; alias paste-clip='xsel --clipboard --output'
+else
+  clip() { printf '\033]52;c;%s\a' "$(base64 | tr -d '\n')" > /dev/tty; }
+fi
+alias cpwd='pwd | tr -d "\n" | clip'   # copy current directory path
+
 # git extras (OMZ git plugin adds many; a couple of personal favorites)
 alias gst='git status'
 alias glog="git log --graph --abbrev-commit --decorate --date=relative \

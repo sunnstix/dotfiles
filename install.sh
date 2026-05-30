@@ -39,7 +39,7 @@ install_deps_linux() {
   if [ "$NO_SUDO" -eq 0 ]; then
     say "apt install (needs sudo)"
     sudo apt-get update -y
-    sudo apt-get install -y zsh stow tmux eza bat fd-find git-delta build-essential curl unzip git fontconfig
+    sudo apt-get install -y zsh stow tmux eza bat fd-find git-delta build-essential curl unzip git fontconfig wl-clipboard xclip
   else
     say "skipping apt (--no-sudo); assuming zsh/stow/tmux/eza/bat/fd present"
   fi
