@@ -117,14 +117,16 @@ install_font() {
 # ---------------------------------------------------------------------------
 install_zsh_plugins() {
   [ -d "$HOME/.oh-my-zsh" ] || git clone --depth=1 https://github.com/ohmyzsh/ohmyzsh.git "$HOME/.oh-my-zsh"
-  local C="$HOME/.oh-my-zsh/custom/plugins"
-  declare -A P=(
-    [zsh-autosuggestions]=https://github.com/zsh-users/zsh-autosuggestions
-    [zsh-syntax-highlighting]=https://github.com/zsh-users/zsh-syntax-highlighting
-    [zsh-completions]=https://github.com/zsh-users/zsh-completions
-    [fzf-tab]=https://github.com/Aloxaf/fzf-tab
-  )
-  for p in "${!P[@]}"; do [ -d "$C/$p" ] || git clone --depth=1 "${P[$p]}" "$C/$p"; done
+  local C="$HOME/.oh-my-zsh/custom/plugins" entry name url
+  # "name|url" pairs — avoids `declare -A` (macOS ships bash 3.2, no assoc arrays)
+  for entry in \
+    "zsh-autosuggestions|https://github.com/zsh-users/zsh-autosuggestions" \
+    "zsh-syntax-highlighting|https://github.com/zsh-users/zsh-syntax-highlighting" \
+    "zsh-completions|https://github.com/zsh-users/zsh-completions" \
+    "fzf-tab|https://github.com/Aloxaf/fzf-tab"; do
+    name="${entry%%|*}"; url="${entry##*|}"
+    [ -d "$C/$name" ] || git clone --depth=1 "$url" "$C/$name"
+  done
   [ -d "$HOME/.config/tmux/plugins/tpm" ] || git clone --depth=1 https://github.com/tmux-plugins/tpm "$HOME/.config/tmux/plugins/tpm"
 }
 
