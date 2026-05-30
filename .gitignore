@@ -1,0 +1,12 @@
+# OS / editor junk
+.DS_Store
+*.swp
+*~
+
+# yazi flavors are fetched at runtime by `ya pkg` (install.sh)
+yazi/.config/yazi/flavors/
+yazi/.config/yazi/package.toml
+
+# never commit machine-local / secret overrides
+.zshrc.local
+*.bak-*

@@ -1,0 +1,6 @@
+# ~/.config/yazi/theme.toml
+# Uses the official Catppuccin Mocha flavor.
+# Installed by install.sh via:  ya pkg add yazi-rs/flavors:catppuccin-mocha
+[flavor]
+dark  = "catppuccin-mocha"
+light = "catppuccin-mocha"

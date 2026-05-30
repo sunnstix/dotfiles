@@ -1,0 +1,4 @@
+# ~/.config/bat/config   (stow package: bat)
+--theme="Catppuccin Mocha"
+--style="numbers,changes,header"
+--paging=auto
