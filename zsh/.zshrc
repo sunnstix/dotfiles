@@ -149,6 +149,20 @@ function y() {
 }
 
 # ---------------------------------------------------------------------------
+# ssh: a remote tmux turns on mouse/focus reporting in our LOCAL terminal.
+# On a hard disconnect the cleanup escape never arrives, so the terminal is
+# left streaming mouse codes. Reset terminal reporting after ssh exits.
+# ---------------------------------------------------------------------------
+ssh() {
+  command ssh "$@"
+  local rc=$?
+  # disable: mouse (1000/1002/1003), focus (1004), SGR & urxvt ext (1006/1015)
+  printf '\e[?1000l\e[?1002l\e[?1003l\e[?1004l\e[?1006l\e[?1015l'
+  stty sane 2>/dev/null
+  return $rc
+}
+
+# ---------------------------------------------------------------------------
 # pyenv  (you use this; kept from the old config, Linux-clean)
 # ---------------------------------------------------------------------------
 if command -v pyenv >/dev/null; then
