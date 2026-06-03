@@ -154,7 +154,12 @@ function y() {
 # left streaming mouse codes. Reset terminal reporting after ssh exits.
 # ---------------------------------------------------------------------------
 ssh() {
-  command ssh "$@"
+  # Ghostty sets TERM=xterm-ghostty, which most remotes don't have a terminfo
+  # entry for -> "missing or unsuitable terminal" + garbled output. Fall back
+  # to xterm-256color (universally present) only when we're in Ghostty.
+  local term="$TERM"
+  [ "$term" = "xterm-ghostty" ] && term="xterm-256color"
+  TERM="$term" command ssh "$@"
   local rc=$?
   # disable: mouse (1000/1002/1003), focus (1004), SGR & urxvt ext (1006/1015)
   printf '\e[?1000l\e[?1002l\e[?1003l\e[?1004l\e[?1006l\e[?1015l'
