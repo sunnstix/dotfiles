@@ -8,7 +8,7 @@
 set -euo pipefail
 
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGES=(zsh tmux nvim yazi starship git bat)
+PACKAGES=(zsh tmux nvim yazi starship git bat ghostty)
 LB="$HOME/.local/bin"; mkdir -p "$LB"
 
 NO_SUDO=0; STOW_ONLY=0
@@ -33,6 +33,7 @@ install_deps_macos() {
   fi
   say "brew install tools"
   brew install zsh stow tmux neovim fzf zoxide starship eza bat fd git-delta lazygit yazi atuin
+  brew install --cask ghostty || true   # OSC52-capable terminal (client-side)
 }
 
 install_deps_linux() {

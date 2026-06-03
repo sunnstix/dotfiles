@@ -43,6 +43,7 @@ icons render as boxes.
 | `yazi`     | `~/.config/yazi/`          | file manager |
 | `git`      | `~/.gitconfig`, delta theme| git + delta diffs |
 | `bat`      | `~/.config/bat/`           | `cat` replacement + themes |
+| `ghostty`  | `~/.config/ghostty/config` | terminal emulator (macOS client; OSC52 for SSH copy) |
 
 Re-link one package after editing: `stow -R -t ~ <package>` (from `~/dotfiles`).
 

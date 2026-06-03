@@ -1,0 +1,26 @@
+# ~/.config/ghostty/config   (stow package: ghostty)
+# Ghostty reads this same path on macOS and Linux.
+
+# ----- Appearance -----------------------------------------------------------
+theme = catppuccin-mocha
+font-family = "JetBrainsMono Nerd Font"
+font-size = 13
+cursor-style = block
+mouse-hide-while-typing = true
+window-padding-x = 8
+window-padding-y = 8
+background-opacity = 1.0
+
+# ----- macOS: make Option act as Alt/Meta -----------------------------------
+# Fixes the shell Alt bindings (Alt-f accept word, Alt-c fzf cd, Alt-d delete
+# word) without iTerm2's "Esc+" workaround. No-op on Linux.
+macos-option-as-alt = true
+
+# ----- Clipboard / OSC52 (this is what fixes remote-tmux copy over SSH) ------
+clipboard-write = allow          # let programs (tmux OSC52) set the clipboard
+clipboard-read = ask             # safer default; prompts if a program reads it
+copy-on-select = false
+
+# ----- Quality of life ------------------------------------------------------
+confirm-close-surface = false    # don't nag when closing a tab/window
+window-save-state = always
