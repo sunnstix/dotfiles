@@ -1,26 +1,42 @@
 # ~/.config/ghostty/config   (stow package: ghostty)
 # Ghostty reads this same path on macOS and Linux.
 
-# ----- Appearance -----------------------------------------------------------
-theme = catppuccin-mocha
+# ----- Font -----------------------------------------------------------------
 font-family = "JetBrainsMono Nerd Font"
 font-size = 13
+
+# ----- Catppuccin Mocha (inline — no dependency on a bundled theme name) ----
+background = #1e1e2e
+foreground = #cdd6f4
+cursor-color = #f5e0dc
+cursor-text = #1e1e2e
+selection-background = #585b70
+selection-foreground = #cdd6f4
+palette = 0=#45475a
+palette = 1=#f38ba8
+palette = 2=#a6e3a1
+palette = 3=#f9e2af
+palette = 4=#89b4fa
+palette = 5=#f5c2e7
+palette = 6=#94e2d5
+palette = 7=#bac2de
+palette = 8=#585b70
+palette = 9=#f38ba8
+palette = 10=#a6e3a1
+palette = 11=#f9e2af
+palette = 12=#89b4fa
+palette = 13=#f5c2e7
+palette = 14=#94e2d5
+palette = 15=#a6adc8
+
+# ----- macOS: Option as Alt/Meta (for Alt-f, Alt-c, Alt-d shell bindings) ----
+macos-option-as-alt = true
+
+# ----- Quality of life ------------------------------------------------------
 cursor-style = block
 mouse-hide-while-typing = true
 window-padding-x = 8
 window-padding-y = 8
-background-opacity = 1.0
 
-# ----- macOS: make Option act as Alt/Meta -----------------------------------
-# Fixes the shell Alt bindings (Alt-f accept word, Alt-c fzf cd, Alt-d delete
-# word) without iTerm2's "Esc+" workaround. No-op on Linux.
-macos-option-as-alt = true
-
-# ----- Clipboard / OSC52 (this is what fixes remote-tmux copy over SSH) ------
-clipboard-write = allow          # let programs (tmux OSC52) set the clipboard
-clipboard-read = ask             # safer default; prompts if a program reads it
-copy-on-select = false
-
-# ----- Quality of life ------------------------------------------------------
-confirm-close-surface = false    # don't nag when closing a tab/window
-window-save-state = always
+# Note: OSC52 clipboard write is ALLOWED by default in Ghostty, so copying from
+# a remote tmux over SSH lands in your Mac clipboard with no extra setting.
