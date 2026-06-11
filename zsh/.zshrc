@@ -247,6 +247,7 @@ elif command -v xclip >/dev/null; then
 elif command -v xsel >/dev/null; then
   alias clip='xsel --clipboard --input'; alias paste-clip='xsel --clipboard --output'
 else
+  unalias clip 2>/dev/null; unalias paste-clip 2>/dev/null
   clip() { printf '\033]52;c;%s\a' "$(base64 | tr -d '\n')" > /dev/tty; }
 fi
 alias cpwd='pwd | tr -d "\n" | clip'   # copy current directory path
