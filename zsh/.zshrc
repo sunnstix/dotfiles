@@ -47,6 +47,9 @@ export LESS="-R"                          # pass through colors
 # ---------------------------------------------------------------------------
 # Oh-My-Zsh
 # ---------------------------------------------------------------------------
+# User completion scripts (e.g. ant, other CLI tools)
+fpath=("$HOME/.local/share/zsh/completions" $fpath)
+
 export ZSH="$HOME/.oh-my-zsh"
 ZSH_THEME=""                              # empty: starship owns the prompt
 zstyle ':omz:update' mode auto            # auto-update OMZ in the background
