@@ -47,6 +47,21 @@ export LESS="-R"                          # pass through colors
 # ---------------------------------------------------------------------------
 # Oh-My-Zsh
 # ---------------------------------------------------------------------------
+# Ensure standard zsh function dirs are in fpath (compinit, add-zsh-hook, colors,
+# is-at-least, etc.). Normally set by /etc/zshenv, but Homebrew zsh on macOS may
+# not inherit them — add any that exist and aren't already present.
+for _zd in \
+  /opt/homebrew/share/zsh/functions \
+  /opt/homebrew/share/zsh/site-functions \
+  /usr/local/share/zsh/functions \
+  /usr/local/share/zsh/site-functions \
+  /usr/share/zsh/${ZSH_VERSION}/functions \
+  /usr/share/zsh/functions \
+  /usr/share/zsh/site-functions; do
+  [[ -d $_zd && ! " ${fpath[*]} " == *" $_zd "* ]] && fpath=($fpath $_zd)
+done
+unset _zd
+
 # User completion scripts (e.g. ant, other CLI tools)
 fpath=("$HOME/.local/share/zsh/completions" $fpath)
 
