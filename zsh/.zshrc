@@ -51,8 +51,10 @@ export LESS="-R"                          # pass through colors
 # is-at-least, etc.). Normally set by /etc/zshenv, but Homebrew zsh on macOS may
 # not inherit them — add any that exist and aren't already present.
 for _zd in \
+  /opt/homebrew/share/zsh/${ZSH_VERSION}/functions \
   /opt/homebrew/share/zsh/functions \
   /opt/homebrew/share/zsh/site-functions \
+  /usr/local/share/zsh/${ZSH_VERSION}/functions \
   /usr/local/share/zsh/functions \
   /usr/local/share/zsh/site-functions \
   /usr/share/zsh/${ZSH_VERSION}/functions \
