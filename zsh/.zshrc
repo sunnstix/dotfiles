@@ -255,6 +255,9 @@ alias grep='grep --color=auto'
 # Native backend when local (macOS pbcopy, Wayland wl-copy, X11 xclip/xsel);
 # OSC52 fallback when remote, so `clip` over SSH reaches your LOCAL clipboard
 # (relies on tmux `set-clipboard on`, which is set in tmux.conf).
+# _clip_osc52 is defined unconditionally under a private name to avoid the
+# zsh alias/function conflict when this file is re-sourced.
+_clip_osc52() { printf '\033]52;c;%s\a' "$(base64 | tr -d '\n')" > /dev/tty; }
 if command -v pbcopy >/dev/null; then
   alias clip='pbcopy'; alias paste-clip='pbpaste'
 elif command -v wl-copy >/dev/null; then
@@ -264,8 +267,7 @@ elif command -v xclip >/dev/null; then
 elif command -v xsel >/dev/null; then
   alias clip='xsel --clipboard --input'; alias paste-clip='xsel --clipboard --output'
 else
-  unalias clip 2>/dev/null; unalias paste-clip 2>/dev/null
-  clip() { printf '\033]52;c;%s\a' "$(base64 | tr -d '\n')" > /dev/tty; }
+  alias clip='_clip_osc52'
 fi
 alias cpwd='pwd | tr -d "\n" | clip'   # copy current directory path
 
