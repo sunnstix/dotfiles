@@ -1,5 +1,10 @@
-default: true
-MD013: false   # line length — too strict for prose
-MD014: false   # dollar signs in code blocks — style preference
-MD033: false   # inline HTML allowed
-MD041: false   # first line doesn't have to be H1
+default: false   # opt-in only — style rules disabled entirely
+
+# Broken syntax that won't render correctly
+MD011: true   # reversed link syntax: (text)[url] instead of [text](url)
+MD037: true   # spaces inside emphasis markers: * text * won't render
+MD038: true   # spaces inside code span: ` text ` won't render
+MD039: true   # spaces inside link text: [ text](url) won't render
+MD042: true   # empty links: [text]() or [text][ref] with no destination
+MD051: true   # invalid heading fragment in link: [text](#nonexistent)
+MD052: true   # undefined reference link/image label
