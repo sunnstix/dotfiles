@@ -1,0 +1,5 @@
+default: true
+MD013: false   # line length — too strict for prose
+MD014: false   # dollar signs in code blocks — style preference
+MD033: false   # inline HTML allowed
+MD041: false   # first line doesn't have to be H1

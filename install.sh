@@ -8,7 +8,7 @@
 set -euo pipefail
 
 DOTFILES="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PACKAGES=(zsh tmux nvim yazi starship git bat ghostty)
+PACKAGES=(zsh tmux nvim yazi starship git bat ghostty markdownlint)
 LB="$HOME/.local/bin"; mkdir -p "$LB"
 
 NO_SUDO=0; STOW_ONLY=0
