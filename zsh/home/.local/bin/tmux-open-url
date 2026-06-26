@@ -1,0 +1,9 @@
+#!/bin/sh
+# Called by tmux-fzf-url with the selected URL as $1.
+# Over SSH there's no display, so copy to clipboard via OSC52 instead.
+# With tmux set-clipboard on + Ghostty, this lands in your Mac clipboard.
+if command -v open >/dev/null 2>&1; then
+  open "$1"                        # macOS: open directly in browser
+else
+  printf '\033]52;c;%s\a' "$(printf '%s' "$1" | base64 | tr -d '\n')" > /dev/tty
+fi
